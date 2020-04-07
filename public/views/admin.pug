@@ -1,0 +1,26 @@
+html
+ head
+  title= title
+  style.
+     form{
+         display:flex;
+         flex-direction:column;
+         align-items:center;
+     }
+     input{
+         height:50px;
+         width:350px;
+         margin:10px;
+         font-size:1em;
+
+     }  
+
+ body
+  h1(style={'text-align':'center','color':"green"})=message
+  form(action='/admin/login', method='POST')
+    
+       
+      input(type='text', name='userid', value='',placeholder='enter userid')
+      
+      input(type='text', name='password', value='',placeholder='enter password')
+      input(type='submit', value='Submit') 

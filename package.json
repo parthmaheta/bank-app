@@ -1,0 +1,18 @@
+{
+  "name": "bank-app",
+  "version": "1.0.0",
+  "description": "simple bank application with different role like user,bank and admin,pug as template engine",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "4.17.1",
+    "pug": "2.0.4",
+    "crypto": "1.0.1"
+
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
