@@ -1,0 +1,68 @@
+html
+    head
+      title|Home_Admin
+      script.
+        function deleteBank(id){
+            fetch('bank/' + id, {
+                method: 'DELETE',
+               
+            })
+            .then(res =>{
+              if(res)
+               document.getElementById(id).remove()
+            }) 
+        }
+
+        function addBank(event){
+                event.preventDefault()
+                data="nm="+document.forms[0].nm.value+"&pw="+document.forms[0].pw.value
+                
+                fetch('bank/add',{method:'POST',body:data, headers:{"Content-Type": "application/x-www-form-urlencoded"}})
+                 .then(res=>res.text())
+                 .then(res=>console.log(res))  
+        } 
+
+      style.
+       button{
+          margin:5px;
+          height:40px;
+       }
+       .form{
+         display:flex;
+         flex-direction:column;
+         align-items:center;
+       }
+       input{
+         height:50px;
+         width:350px;
+         font-size:1em;
+         margin:10px;
+       }
+    body
+     a(href="logout") logout
+
+     form(action="addbank", method="post",class="form")
+       h3|ADD BANK
+       input(type="text", name="nm",placeholder="Bank Name")
+       input(type="password", name="pw",placeholder="Password")
+       input(type="submit", value="ADD",onclick="addBank(event)")
+
+     br
+     br
+     h2(align='center')|View Bank  
+     
+     table
+      thead
+        th|No.
+        th|Name
+        th|ISFC
+        th|Delete
+      tbody
+       each val,index in banks
+        tr(id=val.a)
+         td=index+1
+         td=val.b
+         td=val.c
+         td
+          button(onclick=`deleteBank('${val.a}')`) Delete
+    

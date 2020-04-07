@@ -1,7 +1,11 @@
 const express=require("express")
 const app =express()
 
+const session=require("express-session")
+
 app.use(express.urlencoded({extended:true}))
+
+app.use(session({secret:"bank-app",saveUninitialized:true,resave:true}))
 
 app.set('view engine','pug')
 app.set('views','./public/views')
@@ -11,6 +15,7 @@ app.use(require('./server/functions/logger.js').httplogger)
 app.get('/',(req,res)=>{
     res.render('index',{ title: 'BANK-APP', message: 'Welcome TO Bank' })
 })
+
 
 app.use('/user',require('./server/route/user.js'))
 app.use('/bank',require('./server/route/bank.js'))
