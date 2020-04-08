@@ -6,22 +6,38 @@ const fun=require('./../functions/function')
 const file='admin.log'
 
 
-
 router.get("/",admin)
 router.post("/login",login)
 
 router.get('/logout',logout)
-
+router.get('/bank',home)
 router.post('/bank/add',addBank)
 router.delete('/bank/:id',deleteBank)
 
 function admin(req,res){
     if(req.session.admin)
-     return res.render('admin_home',{banks:[]})
-
-     res.render('admin',{title:'Login',message:'Login'})
+     return res.redirect('/admin/bank') 
+     
+    res.render('admin',{title:'Login',message:'Login'})
+     
 }
-
+function home(req,res){
+    if(req.session.admin)
+     {
+         const db=require('./../functions/db.js')
+         db.query('select name,isfc from banks',(err,result)=>{
+            if(!err)
+            {  
+             return res.render('admin_home',{banks:result})
+            }
+            filelogger('db.log','cant get banks detail')
+            res.render('admin_home',{banks:[]})
+         })
+         
+     }
+    else
+     res.redirect('/')
+}
 function login(req,res){
     
     if("21232f297a57a5a743894a0e4a801fc3"===crypto.createHash('md5').update(req.body.userid).digest('hex'))
@@ -30,7 +46,7 @@ function login(req,res){
           {
               filelogger(file,'s login\t'+req.ip)
               req.session.admin="1"
-              return res.render('admin_home',{banks:[]})
+              return res.redirect('/admin/bank')
           }
      }
      filelogger(file,`f login\t${req.ip}`)
@@ -44,17 +60,33 @@ function logout(req,res){
 }
 
 async function addBank(req,res){
+    if(!req.session.admin)
+     return res.redirect('/admin')
+
     const db=require("./../functions/db.js")
     let isfc=fun.getRandomInt(100000,999999)
     while(!await fun.isUniqueISFC(isfc))
          isfc=fun.getRandomInt(100000,999999)
-    db.query(`insert into banks values('${req.body.nm}',${isfc},'${req.body.pw}')`,(err,result)=>{
-        filelogger('db.log',req.body.nm+" bank\t"+isfc+" inserted")
-        res.send(isfc+' ')
+
+    let pw=crypto.createHash("md5").update(req.body.pw).digest("hex")    
+    db.query(`insert into banks values('${req.body.nm}',${isfc},'${pw}')`,(err,result)=>{
+        filelogger(file,req.body.nm+" bank\t"+isfc+" inserted")
+        res.send(isfc+'')
     }) 
 }
 
 function deleteBank(req,res){
-    res.send(true)
+    if(!req.session.admin)
+     return res.redirect('/admin')
+     
+    const db=require("./../functions/db.js")
+    db.query('delete from banks where isfc='+req.params.id,(err)=>{
+        if(!err){
+            filelogger(file,'deleted isfc '+req.params.id)
+            return res.send(true)
+        }
+        filelogger(file,'cant delete isfc '+req.params.id)
+    })
+    
 }
 module.exports=router

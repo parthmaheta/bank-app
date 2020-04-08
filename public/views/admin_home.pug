@@ -15,11 +15,23 @@ html
 
         function addBank(event){
                 event.preventDefault()
-                data="nm="+document.forms[0].nm.value+"&pw="+document.forms[0].pw.value
+                let nm=document.forms[0].nm
+                let pw=document.forms[0].pw
+                data="nm="+nm.value+"&pw="+pw.value
                 
                 fetch('bank/add',{method:'POST',body:data, headers:{"Content-Type": "application/x-www-form-urlencoded"}})
                  .then(res=>res.text())
-                 .then(res=>console.log(res))  
+                 .then(isfc=>addRow(isfc,nm,pw))  
+        }
+        function addRow(isfc,nm,pw){
+          let tr=document.createElement('TR')
+          tr.setAttribute('id',isfc)
+          tr.innerHTML=`<td>new</td><td>${nm.value}</td><td>${isfc}</td><td><button onclick='deleteBank("${isfc}")'>Delete</button></td>`
+          let banks=document.getElementById('banks')
+          banks.appendChild(tr)
+
+          nm.value=''
+          pw.value=''
         } 
 
       style.
@@ -51,18 +63,18 @@ html
      br
      h2(align='center')|View Bank  
      
-     table
+     table(class='form',border='1')
       thead
         th|No.
         th|Name
         th|ISFC
         th|Delete
-      tbody
+      tbody(id='banks')
        each val,index in banks
-        tr(id=val.a)
+        tr(id=val.isfc)
          td=index+1
-         td=val.b
-         td=val.c
+         td=val.name
+         td=val.isfc
          td
-          button(onclick=`deleteBank('${val.a}')`) Delete
+          button(onclick=`deleteBank('${val.isfc}')`) Delete
     
