@@ -13,15 +13,13 @@ Requirements:
  BANK
    ->ADD ACCOUNT
    ->DELETE ACCOUNT
-   ->BLOCK ACCOUNT
    ->View Transactions Of Account
    ->Can Login Between 10:00 am to 4:00 pm only
 
  ADMIN
      ->ADD BANK
      ->Delete BANK
-     ->Total Money 
-     ->Total Customer
+     
       
 
 Technology :

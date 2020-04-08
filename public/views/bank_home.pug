@@ -1,5 +1,108 @@
 html
   head
     title|welcome
+    style.
+       button{
+          margin:5px;
+          height:40px;
+       }
+       .form{
+         display:flex;
+         flex-direction:column;
+         align-items:center;
+       }
+       input{
+         height:50px;
+         width:350px;
+         font-size:1em;
+         margin:10px;
+       }
   body
-   a(href="logout")|logout  
+   a(href="logout")|logout
+   br
+   br
+   form(action="addaccount", method="post",class="form")
+       h3|ADD Account
+       input(type="text", name="nm",placeholder="Name ")
+       input(type="number", name="mn",placeholder="Enter Money")
+       input(type="submit", value="ADD",onclick="addAccount(event)")
+   
+   br
+   br
+   h2(align='center')|View Account
+   
+   table(class='form',border='1')
+      thead
+        th|No.
+        th|Name
+        th|AC No.
+        th|KEY.
+        th|Delete
+        th|View Transaction
+      tbody(id='ACS')
+       each val,index in ACCOUNTS
+        tr(id=val.AC)
+         td=index+1
+         td=val.NAME
+         td=val.AC
+         td=val._KEY
+         td
+          button(onclick=`deleteAC('${val.AC}')`) Delete
+         td
+          button(onclick=`viewAC('${val.AC}')`) View
+   
+   script.
+     function addAccount(e){
+       e.preventDefault()
+       let nm=document.forms[0].nm
+       let mn=document.forms[0].mn
+
+       if(nm.value&&mn.value&&(!isNaN(mn.value))){
+         let data="nm="+nm.value+"&mn="+mn.value
+
+         fetch('add',{
+           method:'POST',
+           body:data,
+           headers:{
+             'Content-Type':'application/x-www-form-urlencoded'
+           }
+         }).then(res=>res.text())
+          .then(res=>addRow(res.split(','),nm,mn))
+          
+       }
+       else
+        alert('invalid data')
+
+     }
+
+     function addRow(arr,nm,mn){
+       let tr=document.createElement('TR')
+          tr.setAttribute('id',arr[0])
+          tr.innerHTML=`<td>new</td><td>${nm.value}</td><td>${arr[0]}</td><td>${arr[1]}</td><td><button onclick='deleteAC("${arr[0]}")'>Delete</button></td><td><button onclick='viewAC("${arr[0]}")'>View</button></td>`
+          let banks=document.getElementById('ACS')
+          banks.appendChild(tr)
+
+          nm.value=''
+          mn.value=''
+     }
+     function deleteAC(id){
+       fetch('/bank/' + id, {
+                method: 'DELETE',
+               
+            })
+            .then(res =>{
+              if(res)
+               document.getElementById(id).remove()
+            })
+     }
+     function viewAc(id){
+       fetch('/bank/' + id, {
+                method: 'POST',
+               
+            })
+            .then(res =>{
+              if(res)
+               document.getElementById(id).remove()
+            })
+     }
+   
