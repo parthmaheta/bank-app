@@ -11,6 +11,21 @@ html
       a:hover{
           color:red;
       } 
+     form{
+         display:flex;
+         flex-direction:column;
+         align-items:center;
+     }
+     input{
+         height:50px;
+         width:350px;
+         margin:10px;
+         font-size:1em;
+     }  
+     .d-none {
+       display:none;
+     }
+
   body
     h1(style={'color':'green','text-align':'center'})= message
     a(href='/admin') ADMIN
@@ -19,4 +34,33 @@ html
     a(href='/bank') BANK
     |
     |
-    a(href='/user') USER
+    br
+    br
+    form(action='/user/login', method='POST')
+      h3(style={'text-align':'center','color':'green'}) Login
+    
+       
+      input(type='text', name='uid', value='',placeholder='enter userid')
+      
+      input(type='text', name='pw', value='',placeholder='enter password')
+      input(type='submit', value='Submit')
+      button(onclick='show(1)',type='button') Create New Account  
+
+    form(action='/user/signup', method='POST',class='d-none')
+      h3(style={'text-align':'center','color':'green'}) SignUp
+       
+      input(type='text', name='uid', value='',placeholder='enter userid')
+      input(type='number', name='key', value='',placeholder='enter key')      
+      input(type='password', name='pw', value='',placeholder='enter password')
+      input(type='submit', value='Create')
+      button(onclick='show(0)',type='button') Login    
+    
+    script.
+      function show(index){
+         let opposite=1;
+         if(index)
+          opposite=0
+        document.forms[index].classList.remove('d-none')
+        document.forms[opposite].classList.add('d-none')
+
+      }   
