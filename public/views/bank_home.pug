@@ -17,6 +17,26 @@ html
          font-size:1em;
          margin:10px;
        }
+       .modal{
+         position:absolute;
+         top:50;
+         z-index:10;
+         width:60%;
+         height:80%;
+         display:block;
+         background-color:white;
+         margin-left:10%;
+         box-shadow:5px 4px 4px 4px grey;
+                  
+       }
+       .modal p{
+         color:green;
+         font-size:2em;
+         text-align:center;
+       }
+       .d-none{
+         display:none;
+       }
   body
    a(href="logout")|logout
    br
@@ -49,7 +69,9 @@ html
          td
           button(onclick=`deleteAC('${val.AC}')`) Delete
          td
-          button(onclick=`viewAC('${val.AC}')`) View
+          button(onclick=`viewAC('${val._KEY}')`) View
+
+   div(class='modal  d-none')
    
    script.
      function addAccount(e){
@@ -78,7 +100,7 @@ html
      function addRow(arr,nm,mn){
        let tr=document.createElement('TR')
           tr.setAttribute('id',arr[0])
-          tr.innerHTML=`<td>new</td><td>${nm.value}</td><td>${arr[0]}</td><td>${arr[1]}</td><td><button onclick='deleteAC("${arr[0]}")'>Delete</button></td><td><button onclick='viewAC("${arr[0]}")'>View</button></td>`
+          tr.innerHTML=`<td>new</td><td>${nm.value}</td><td>${arr[0]}</td><td>${arr[1]}</td><td><button onclick='deleteAC("${arr[0]}")'>Delete</button></td><td><button onclick='viewAC("${arr[1]}")'>View</button></td>`
           let banks=document.getElementById('ACS')
           banks.appendChild(tr)
 
@@ -86,6 +108,7 @@ html
           mn.value=''
      }
      function deleteAC(id){
+       if(confirm('are You Sure ?'))
        fetch('/bank/' + id, {
                 method: 'DELETE',
                
@@ -95,14 +118,34 @@ html
                document.getElementById(id).remove()
             })
      }
-     function viewAc(id){
+     function viewAC(id){
        fetch('/bank/' + id, {
                 method: 'POST',
                
             })
-            .then(res =>{
-              if(res)
-               document.getElementById(id).remove()
-            })
+            .then(res =>res.json())
+            .then(res=>showModal(res))
+     }
+     function showModal(res){
+        modal=document.getElementsByClassName('modal')[0]
+        modal.innerHTML="<br><button onclick='hideModal()'>Close</buton><br>"
+        for(i in res){
+          
+          let st='<p>'+i+'.  Received from '
+           if(res[i].ACTION=='s')
+            st='<p>'+i+'.  Sent to '
+            
+           st+=res[i].AC 
+           st+=' $ '+res[i].MONEY+'</p>'
+
+          modal.innerHTML+=st
+        }
+        
+        modal.classList.remove('d-none')
+        
+     }
+     function hideModal(){
+       document.getElementsByClassName('modal')[0].classList.add('d-none')
+       
      }
    

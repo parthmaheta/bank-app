@@ -14,7 +14,30 @@ router.post("/:id",getTransaction)
 router.delete('/:id',deleteAC)
 
 function getTransaction(req,res){
-      
+    if(req.session.bank)
+      {
+        let db=require('./../functions/db.js')
+        db.query(`select MONEY,(
+          case 
+            WHEN _FROM=${req.params.id} then  (SELECT NAME from accounts where _KEY=_TO) 
+            when _TO=${req.params.id} then  (SELECT NAME from accounts where _KEY=_FROM)  
+          END)as NAME,(
+          case 
+            WHEN _FROM=${req.params.id} then _TO
+            when _TO=${req.params.id} then _FROM
+          END) as AC ,
+          (
+          case 
+            WHEN _FROM=${req.params.id} then 's'
+            when _TO=${req.params.id} then 'r'
+          END) as ACTION
+           from transaction `,(err,result)=>{
+          filelogger(file,'s request transaction of'+req.params.id+'isfc '+req.session.bank)
+          return res.send(JSON.stringify(result))
+        })
+      }
+      else
+       res.send('logged out')
 }
 
 async function addAccount(req,res){
