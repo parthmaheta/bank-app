@@ -113,8 +113,8 @@ function deleteAC(req,res){
 function login(req,res){
     let hour=new Date().getHours()
 
-    // if(hour>10&&hour<16)
-    // {
+    if(hour>10&&hour<16)
+    {
     if(req.body.nm&&req.body.pw)
     {let pw=crypto.createHash('md5').update(req.body.pw).digest("hex")
     let db=require('./../functions/db.js')
@@ -129,7 +129,7 @@ function login(req,res){
         return res.redirect('./')
    })
   }
-// }
+}
   else
    res.redirect('./')
 }

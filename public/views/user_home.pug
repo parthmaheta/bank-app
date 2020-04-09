@@ -1,6 +1,50 @@
 html
  title= 'Welcome'
  head
+  style.
+     form{
+         display:flex;
+         flex-direction:column;
+         align-items:center;
+     }
+     input{
+         height:50px;
+         width:350px;
+         margin:10px;
+         font-size:1em;
+
+     }  
 
  body
   a(href='logout') logout
+
+  h3(align='center') current balance is #{balance}
+
+  h2(align='center') Send Money
+  form(action='send', method='POST')
+    input(type='number', name='to',placeholder='TO')
+    input(type='number', name='mn',placeholder='enter money',max=balance)
+    input(type='submit',value='Send') 
+
+  br
+  br
+  h5(align='center') Last 10 transactions
+  table(border='1',align='center')
+   thead
+      th|No
+      th|Action
+      th|Money
+      th|Person
+      th|AC
+      th|TIME
+   tbody   
+     each val,index in transaction
+       tr
+        td=index+1
+        td=val.ACTION
+        td=val.MONEY
+        td=val.NAME
+        td=val.AC
+        td=val.DATETIME.toDateString()+' '+val.DATETIME.toLocaleTimeString()
+
+ 

@@ -6,8 +6,32 @@ const file='user.log'
 
 router.post("/signup",signup)
 router.post("/login",login)
+router.post("/send",send)
 router.get("/home",home)
 router.get("/logout",logout)
+
+
+function send(req,res){
+    if(req.session.user&&req.body.to&&req.body.mn){
+       let db=require('./../functions/db.js')
+       db.query(`select _KEY from accounts where _KEY=${req.body.to}`,(err,result)=>{
+           if(result.length==1){
+                db.query('insert into transaction (`_FROM`,`_TO`,`MONEY`) value('+req.session.user+','+req.body.to+','+req.body.mn+')',(err,result)=>{
+                    if(result){
+                        filelogger(file,'s send '+req.session.user+' '+req.body.mn+' '+req.body.to)
+                        return res.redirect('home')
+                    }
+                }) 
+           }
+           else
+            return res.redirect('home')
+       })
+       
+    }
+    else{
+        return res.send('invalid')
+    }
+}
 
 function logout(req,res){
     filelogger(file,'s logout'+req.ip+' '+req.session.user)
@@ -17,7 +41,33 @@ function logout(req,res){
 
 function home(req,res){
     if(req.session.user){
-       res.render('user_home',{})
+        let balance
+        let transaction
+        let db=require('./../functions/db.js')
+        db.query('select MONEY from accounts where _KEY='+req.session.user,(err,result)=>{
+            if(!err)
+            {
+              balance=result[0].MONEY
+              db.query(`select MONEY,DATETIME,(
+                case 
+                  WHEN _FROM=${req.session.user} then  (SELECT NAME from accounts where _KEY=_TO) 
+                  when _TO=${req.session.user} then  (SELECT NAME from accounts where _KEY=_FROM)  
+                END)as NAME,(
+                case 
+                  WHEN _FROM=${req.session.user} then _TO
+                  when _TO=${req.session.user} then _FROM
+                END) as AC ,
+                (
+                case 
+                  WHEN _FROM=${req.session.user} then 'sent'
+                  when _TO=${req.session.user} then 'received'
+                END) as ACTION
+                 from transaction order by DATETIME desc limit 10`,(err,result)=>{
+                  if(result)
+                  return res.render('user_home',{balance,transaction:result})
+              })
+            }
+        })
     }
     else{
         res.redirect('/')

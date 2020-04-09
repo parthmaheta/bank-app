@@ -39,9 +39,9 @@ function home(req,res){
      res.redirect('/')
 }
 function login(req,res){
-    
+    //admin
     if("21232f297a57a5a743894a0e4a801fc3"===crypto.createHash('md5').update(req.body.userid).digest('hex'))
-     {
+     {     //admin
          if("21232f297a57a5a743894a0e4a801fc3"===crypto.createHash('md5').update(req.body.password).digest('hex'))
           {
               filelogger(file,'s login\t'+req.ip)
